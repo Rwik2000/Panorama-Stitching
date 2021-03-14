@@ -1,1 +1,1 @@
-# Panorama-Stitching
+# Panorama_Stitching
