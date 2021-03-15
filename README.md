@@ -1,10 +1,11 @@
+![alt text](https://github.com/Rwik2000/Panorama-Stitching/blob/main/Dataset/sample.jpg)
 # Panorama Stitching
 
 Code by Rwik Rana, IITGn.
 
 View the project on https://github.com/Rwik2000/Panorama-Stitching for better viewing 
 
-This is a Code to stitch multiple images to create panoramas. This is robust for stitching 4 images. This is the tree for the entire repo:\
+This is a Code to stitch multiple images to create panoramas. This is robust for stitching **4 images**. This is the tree for the entire repo:\
 
 ```
 Panorama Stitching
@@ -36,6 +37,31 @@ warping, RANSAC and Laplacian Blending to solve the problem statement.
 In the [main.py](https://github.com/Rwik2000/Panorama-Stitching/blob/main/main.py), 
 1. Add your dataset in the Dataset Directory.
 2. In [line 147](https://github.com/Rwik2000/Panorama-Stitching/blob/main/main.py#L147), add your datasets in the Datasets array.
+```python
+Datasets = ["I5"] #ADD YOUR DATASET HERE
+for Dataset in Datasets:
+    print("Stitching Dataset : ", Dataset)
+    Path = "Dataset/"+Dataset
+    images=[]
+    for filename in os.listdir(Path):
+        if filename.endswith(".JPG") or filename.endswith(".PNG"):
+            img_dir = Path+'/'+str(filename)
+            images.append(cv2.imread(img_dir))
+
+    for i in range(len(images)):
+        images[i] = imutils.resize(images[i], width=500)
+
+    images = images[1:5]
+    stitcher = panaroma_stitching()
+    result, left, right = stitcher.MultiStitch(images)
+    print("========>Done! Final Image Saved in Outputs Dir!")
+    if os.path.exists("Outputs/"+Dataset):
+        shutil.rmtree("Outputs/"+Dataset)
+    os.makedirs("Outputs/"+Dataset, )
+    cv2.imwrite("Outputs/"+Dataset+"/"+Dataset+".JPG", result)
+    cv2.imwrite("Outputs/"+Dataset+"/"+Dataset+"_left.JPG", left)
+    cv2.imwrite("Outputs/"+Dataset + "/"+Dataset+"_right.JPG", right)
+```
 3. The output of the same would be save in the Output directory.
 
 ### Flow of the Code:
