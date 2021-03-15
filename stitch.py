@@ -18,7 +18,7 @@ class panaroma_stitching():
         (kpsA, featuresA) = self.detectAndDescribe(imageA)
         (kpsB, featuresB) = self.detectAndDescribe(imageB)
         # match features between the two images
-        H = self.matchKeypoints(kpsA, kpsB,featuresA, featuresB, ratio)
+        H, invH = self.matchKeypoints(kpsA, kpsB,featuresA, featuresB, ratio)
 
         warpClass = Warp()
         if self.isLeft:
@@ -27,11 +27,10 @@ class panaroma_stitching():
             warpClass.yOffset = 0
         warpClass.xOffset = 50
         offsets = [warpClass.xOffset, warpClass.yOffset]
-        result = warpClass.warpPerspective(imageA, H,
-            (imageB.shape[0] + 100, imageB.shape[1] + imageA.shape[1]))
-        result = np.uint8(result)
-        # cv2.imshow("hey", result)
 
+        result = warpClass.InvWarpPerspective(imageA, invH,H,
+            (imageB.shape[0] + 800, imageB.shape[1] + imageA.shape[1]))
+        result = np.uint8(result)
         result[0 + offsets[0]:imageB.shape[0] + offsets[0], 0 +  offsets[1]:imageB.shape[1]+  offsets[1]] = imageB
         return result
 
@@ -43,7 +42,7 @@ class panaroma_stitching():
         else:
             left = images[:num_imgs//2 + 1]
             right = images[num_imgs//2:]
-        print(len(left),len(right))
+        print("========> Stitching Left Side ...")
         tempLeftStitch = images[0]
         while len(left) >1:
             temp_imgB = left.pop(0)
@@ -52,19 +51,21 @@ class panaroma_stitching():
             left.insert(0, tempLeftStitch)
         tempRightStitch = images[-1]
         self.isLeft = 0
+        print("========> Done! \n========> Stitching Right Side ...")
         while len(right)>1:
             temp_imgA = right.pop(0)
             temp_imgB = right.pop(0)
             tempRightStitch = self.stitchTwoImg([temp_imgA, temp_imgB], showMatches=True)
             right.insert(0, tempRightStitch)
-        tempLeftStitch = tempLeftStitch[50:-50][-2*images[0].shape[0]: ]
-        tempRightStitch = tempRightStitch[50:-50][: 2*images[0].shape[0]]
+        # tempLeftStitch = tempLeftStitch[50:-50][-2*images[0].shape[0]: ]
+        # tempRightStitch = tempRightStitch[50:-50][: 2*images[0].shape[0]]
 
         cv2.imshow("left", tempLeftStitch)
         cv2.imshow("right", tempRightStitch)
         cv2.waitKey(0)
-        final = self.stitchTwoImg([tempLeftStitch, tempRightStitch])
-        
+        print("========> Done! \n========> Stitching Both Sides")
+        self.isLeft = 0
+        final = self.stitchTwoImg([tempLeftStitch, tempRightStitch])        
         return final
         
 
@@ -94,12 +95,13 @@ class panaroma_stitching():
                 # computing a homography requires at least 4 matches
         if len(matches) > 4:
             # construct the two sets of points
-            ptsA = np.float32([kpsA[i] for (_, i) in matches])
+            ptsA = np.float32([kpsA[i] for (_, i) in matches])      
             ptsB = np.float32([kpsB[i] for (i, _) in matches])
 
             homographyFunc = homographyRansac(4,100)
             H = homographyFunc.getHomography(ptsA, ptsB)
-            return H
+            invH = np.linalg.inv(H)
+            return H, invH
         # otherwise, no homograpy could be computed
         return None
 
@@ -122,7 +124,8 @@ class panaroma_stitching():
         # return the visualization
         return vis
 
-Datasets = ["I1","I2","I3","I4","I5","I6"]
+# Datasets = ["I1","I2","I3","I4","I5","I6"]
+Datasets = ["I6"]
 for Dataset in Datasets:
     print("Stitching Dataset : ", Dataset)
     Path = "Dataset/"+Dataset
@@ -133,8 +136,29 @@ for Dataset in Datasets:
             images.append(cv2.imread(img_dir))
 
     for i in range(len(images)):
-        images[i] = imutils.resize(images[i], width=300)
+        images[i] = imutils.resize(images[i], width=500)
 
+    # print(images[1].shape)
+    images = images[:4]
     stitcher = panaroma_stitching()
     result = stitcher.MultiStitch(images)
+    # result = result[100:-100][:]
+    print("========>Done! Final Image Saved in Outputs Dir!")
     cv2.imwrite("Outputs/"+Dataset+".JPG", result)
+# Dataset = "I2"
+# Path = "Dataset/"+Dataset
+# images=[]
+# for filename in os.listdir(Path):
+#     if filename.endswith(".JPG") or filename.endswith(".PNG"):
+#         img_dir = Path+'/'+str(filename)
+#         images.append(cv2.imread(img_dir))
+
+# for i in range(len(images)):
+#     images[i] = imutils.resize(images[i], width=500)
+
+# # print(images[1].shape)
+# images = images[:4]
+# stitcher = panaroma_stitching()
+# result = stitcher.MultiStitch(images)
+# result = result[100:-100][:]
+# cv2.imwrite("Outputs/"+Dataset+".JPG", result)
