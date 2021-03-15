@@ -6,7 +6,7 @@ warping, RANSAC and Laplacian Blending to solve the problem statement.
 
 To use the code, 
 1. Add your dataset in the Dataset Directory.
-2. In line 138, add your datasets in the Datasets array.
+2. In line 147, add your datasets in the Datasets array.
 3. The output of the same would be save in the Output directory.
 
 Flow of the Code:
