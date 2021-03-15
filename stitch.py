@@ -8,7 +8,6 @@ import random
 
 from Homography import homographyRansac
 from Warp import Warp
-# from homography import ransac
 
 class panaroma_stitching():    
     def __init__(self):
@@ -123,17 +122,19 @@ class panaroma_stitching():
         # return the visualization
         return vis
 
-Dataset = "I4"
-Path = "Dataset/"+Dataset
-images=[]
-for filename in os.listdir(Path):
-    if filename.endswith(".JPG") or filename.endswith(".PNG"):
-        img_dir = Path+'/'+str(filename)
-        images.append(cv2.imread(img_dir))
+Datasets = ["I1","I2","I3","I4","I5","I6"]
+for Dataset in Datasets:
+    print("Stitching Dataset : ", Dataset)
+    Path = "Dataset/"+Dataset
+    images=[]
+    for filename in os.listdir(Path):
+        if filename.endswith(".JPG") or filename.endswith(".PNG"):
+            img_dir = Path+'/'+str(filename)
+            images.append(cv2.imread(img_dir))
 
-for i in range(len(images)):
-    images[i] = imutils.resize(images[i], width=300)
+    for i in range(len(images)):
+        images[i] = imutils.resize(images[i], width=300)
 
-stitcher = panaroma_stitching()
-result = stitcher.MultiStitch(images)
-cv2.imwrite("stitch.png", result)
+    stitcher = panaroma_stitching()
+    result = stitcher.MultiStitch(images)
+    cv2.imwrite("Outputs/"+Dataset+".JPG", result)
