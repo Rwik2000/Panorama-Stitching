@@ -141,7 +141,7 @@ class panaroma_stitching():
         return vis
 
 # Datasets = ["I1","I2","I3","I4","I5","I6"]
-Datasets = ["I5"]
+Datasets = ["I3"]
 for Dataset in Datasets:
     print("Stitching Dataset : ", Dataset)
     Path = "Dataset/"+Dataset
@@ -155,7 +155,7 @@ for Dataset in Datasets:
         images[i] = imutils.resize(images[i], width=500)
 
     # print(images[1].shape)
-    images = images[:4]
+    images = images[1:5]
     stitcher = panaroma_stitching()
     result, left, right = stitcher.MultiStitch(images)
     # result = result[100:-100][:]
