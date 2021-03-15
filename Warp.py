@@ -46,7 +46,8 @@ class Warp():
             Warping is done using inverse homography, to ensure 
             distortions aren't there in the output.
         """
-        # print(output_shape[0], output_shape[1])
+        # obtaining the coordinates of the final transformed image and
+        # only iterating on the range to reduce time. 
 
         x1 = [0,0,1]
         x2 = [im.shape[1], im.shape[0],1]
@@ -74,5 +75,5 @@ class Warp():
                         warpImage[j +self.xOffset, i +self.yOffset] = im[rq, rp]
                 except:                    
                     continue              
-                
+
         return warpImage
