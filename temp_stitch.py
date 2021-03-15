@@ -61,9 +61,9 @@ class panaroma_stitching():
         # tempLeftStitch = tempLeftStitch[50:-50][-2*images[0].shape[0]: ]
         # tempRightStitch = tempRightStitch[50:-50][: 2*images[0].shape[0]]
 
-        cv2.imshow("left", tempLeftStitch)
-        cv2.imshow("right", tempRightStitch)
-        cv2.waitKey(0)
+        # cv2.imshow("left", tempLeftStitch)
+        # cv2.imshow("right", tempRightStitch)
+        # cv2.waitKey(0)
         final = self.stitchTwoImg([tempLeftStitch, tempRightStitch])
         
         return final
@@ -123,8 +123,8 @@ class panaroma_stitching():
         # return the visualization
         return vis
 
-# Datasets = ["I1","I2","I3","I4","I5","I6"]
-Datasets =["I6"]
+Datasets = ["I1","I2","I3","I4","I5","I6"]
+# Datasets =["I6"]
 for Dataset in Datasets:
     print("Stitching Dataset : ", Dataset)
     Path = "Dataset/"+Dataset
